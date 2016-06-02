@@ -22,6 +22,7 @@ using Windows.Devices.Geolocation;
 using Windows.Storage;
 using Windows.UI.Popups;
 using System.Collections.ObjectModel;
+using Windows.Phone.UI.Input;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
@@ -57,7 +58,10 @@ namespace AccuWeather
             // handling the hardware Back button by registering for the
             // Windows.Phone.UI.Input.HardwareButtons.BackPressed event.
             // If you are using the NavigationHelper provided by some templates,
-            // this event is handled for you.
+            // this event is handled for you
+            base.OnNavigatedTo(e);
+
+            HardwareButtons.BackPressed += HardwareButtons_BackPressed;
 
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             if (localSettings.Values.ContainsKey("LocationConsent"))
@@ -111,6 +115,16 @@ namespace AccuWeather
             ListV1.ItemsSource = Forecast;
        
     }
+
+        private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
+        {
+            if (Frame.CanGoBack)
+                     {
+                         e.Handled = true;
+                         Frame.GoBack();
+                     }
+
+        }
 
         public async Task<Tuple<string, string>> GetLocAsync()
         {
