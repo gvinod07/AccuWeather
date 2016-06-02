@@ -93,6 +93,7 @@ namespace AccuWeather
             obj = await GetForecastAsync(loc_key);
 
             loading.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            loading1.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 
             foreach(Forecasts f in obj)
             {
@@ -107,7 +108,7 @@ namespace AccuWeather
             }
 
             ListV.ItemsSource = Forecast;
-
+            ListV1.ItemsSource = Forecast;
        
     }
 
@@ -187,6 +188,21 @@ namespace AccuWeather
             }
         }
 
-        
-}
+        private void RefreshPage(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(MainPage));
+        }
+
+
+        private void RefreshPages(object sender, TappedRoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(MainPage));
+        }
+
+        private void aboutOpen(object sender, RoutedEventArgs e)
+        {
+            
+            Frame.Navigate(typeof(BlankPage1)); 
+        }
+    }
 }

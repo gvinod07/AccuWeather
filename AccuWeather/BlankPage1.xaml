@@ -1,0 +1,36 @@
+﻿<Page
+    x:Class="AccuWeather.BlankPage1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AccuWeather"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    >
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock Text="Welcome"
+                   FontSize="50"
+                   Margin="30,10,0,0"
+                   TextAlignment="Justify"
+                   Grid.Row="0"
+                   >
+            
+        </TextBlock>
+        <TextBlock Text="Windows Phone Dev is Bae &lt;3"
+                   Margin="10,0,0,10"
+                   Grid.Row="1"
+                   FontSize="25"
+                   TextAlignment="Center"
+                   VerticalAlignment="Center">
+            
+        </TextBlock>
+    </Grid>
+</Page>

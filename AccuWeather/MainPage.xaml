@@ -11,68 +11,112 @@
     </Page.Background>
 
     <Page.Resources>
-        <SolidColorBrush x:Key="back1" Color="Beige"/>
-        <SolidColorBrush x:Key="back2" Color="SteelBlue"/>
-        <SolidColorBrush x:Key="foreground" Color="Black"/>
+        <SolidColorBrush x:Key="foreground" Color="White"/>
     </Page.Resources>
-   
+    <Page.BottomAppBar>
+        <CommandBar>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="abtButon" Label="about" Click="aboutOpen"/>
+            </CommandBar.SecondaryCommands>
+            <AppBarButton Icon="Refresh" Label="refresh" Click="RefreshPage" Tapped="RefreshPages"/>
+        </CommandBar>
+    </Page.BottomAppBar>
 
-    <Grid x:Name="LayoutRoot" >
-        <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="5*"/>
-        </Grid.RowDefinitions>
 
-        <Rectangle x:Name="Rect1" Grid.Row="0" Fill="{StaticResource back1}" IsDoubleTapEnabled="False" IsHoldingEnabled="False" IsRightTapEnabled="False" IsTapEnabled="False" /> 
-        <Rectangle x:Name="Rect2" Grid.Row="1" Fill="{StaticResource back2}" IsTapEnabled="False" IsRightTapEnabled="False" IsHoldingEnabled="False" IsDoubleTapEnabled="False" />
-        <ScrollViewer Grid.Row="1">
-            <ListView x:Name="ListV" Grid.Row="1">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="10,10,10,10">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                         </Grid.RowDefinitions>
+    <Pivot>
+        <PivotItem x:Name="temp" Header="Temperature">
 
-                        <TextBlock Grid.Row="0"
+            <Grid x:Name="LayoutRoot" >
+
+                <ScrollViewer Grid.Row="0">
+
+                <ListView x:Name="ListV" Grid.Row="0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="10,10,10,10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0"
                                    Text="{Binding DateTime}" FontFamily="Segoe UI Semilight" FontSize="30" Margin="0,0,0,10" 
                                    TextAlignment="Center">
 
-                        </TextBlock>
-                        <TextBlock Grid.Row="1" Foreground="{StaticResource foreground}" FontSize="20" FontFamily="Segoe UI Light">
+                                </TextBlock>
+                                <TextBlock Grid.Row="1" Foreground="{StaticResource foreground}" FontSize="20" FontFamily="Segoe UI Light">
                             <Run Text="Temperature : "/>
                             <Run Text="{Binding Temperature.Value}"/>
                             <Run Text="°"/>
                             <Run Text="{Binding Temperature.Unit}"/>
-                        </TextBlock>
-                        <TextBlock Grid.Row="2" Foreground="{StaticResource foreground}" FontFamily="Segoe UI Light" FontSize="20">
+                                </TextBlock>
+                                <Line X1="0" X2="1" Stretch="Fill" Margin="20,20,20,0" Stroke="White" StrokeThickness="0.5" Grid.Row="2"/>
+
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollViewer>
+                <ProgressRing x:Name="loading"
+                      Grid.Row="0"
+                      VerticalAlignment="Center"
+                              HorizontalAlignment="Center"
+                      Foreground="{StaticResource PhoneAccentBrush}"
+                      Height="70"
+                              IsActive="True"
+                      >
+                </ProgressRing>
+            </Grid>
+        </PivotItem>
+        <PivotItem Header="Wind Speed">
+            <Grid x:Name="LayoutRoot1" >
+
+                <ScrollViewer Grid.Row="0">
+                    <ListView x:Name="ListV1" Grid.Row="0">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="10,10,10,10">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0"
+                                   Text="{Binding DateTime}" FontFamily="Segoe UI Semilight" FontSize="30" Margin="0,0,0,10" 
+                                   TextAlignment="Center">
+
+                                    </TextBlock>
+                                    
+                                    <TextBlock Grid.Row="1" Foreground="{StaticResource foreground}" FontFamily="Segoe UI Light" FontSize="20">
                             <Run Text="Wind Speed : "/>
                             <Run Text="{Binding Wind.Speed.Value}"/>
                             <Run Text=""/>
                             <Run Text="{Binding Wind.Speed.Unit}"/>
-                        </TextBlock>
+                                    </TextBlock>
 
-                        <Line X1="0" X2="1" Stretch="Fill" Margin="20,20,20,0" Stroke="Black" StrokeThickness="0.5" Grid.Row="3"/>
+                                    <Line X1="0" X2="1" Stretch="Fill" Margin="20,20,20,0" Stroke="White" StrokeThickness="0.5" Grid.Row="2"/>
 
-                        </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-            </ListView>
-        </ScrollViewer>
-        <ProgressRing x:Name="loading"
-                      Grid.Row="1"
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ScrollViewer>
+                <ProgressRing x:Name="loading1"
+                      Grid.Row="0"
                       VerticalAlignment="Center"
-                      Foreground="#FF890909"
+                              HorizontalAlignment="Center"
+                      Foreground="{StaticResource PhoneAccentBrush}"
                       Height="70"
-                      Background="{Binding ElementName=Rect2, Path=Background}"
+                      Background="Black"
+                              IsActive="True"
                       >
-        </ProgressRing>
-      
-      <TextBlock x:Name="textBlock" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Hourly Forecast" VerticalAlignment="Center"
-                 Foreground="{StaticResource foreground}"
-                 TextAlignment="Center" FontFamily="Segoe UI" FontSize="40"/>
-     </Grid>
+                </ProgressRing>
+            </Grid>
+        </PivotItem>
+        
+
+    </Pivot>
 </Page>
