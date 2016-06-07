@@ -23,6 +23,11 @@ using Windows.Storage;
 using Windows.UI.Popups;
 using System.Collections.ObjectModel;
 using Windows.Phone.UI.Input;
+using System.Net.NetworkInformation;
+using Windows.Networking.Connectivity;
+using Windows.Data.Xml.Dom;
+using Windows.UI.Notifications;
+using System.Diagnostics;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
@@ -36,7 +41,7 @@ namespace AccuWeather
     public sealed partial class MainPage : Page
     {
 
-        public ObservableCollection<Forecasts> Forecast = new ObservableCollection<Forecasts>();
+        public ObservableCollection<Required> Forecast = new ObservableCollection<Required>();
 
         public MainPage()
         {
@@ -50,7 +55,7 @@ namespace AccuWeather
         /// </summary>
         /// <param name="e">Event data that describes how this page was reached.
         /// This parameter is typically used to configure the page.</param>
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             // TODO: Prepare page for display here.
 
@@ -63,58 +68,40 @@ namespace AccuWeather
 
             HardwareButtons.BackPressed += HardwareButtons_BackPressed;
 
-            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-            if (localSettings.Values.ContainsKey("LocationConsent"))
-            { 
-                // User has opted in or out of Location
-                
-            }
-            else
-            {
-                var dialog = new MessageDialog("We need your current location.");
-                dialog.Title = "Please";
-                dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
-                dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-                var res = await dialog.ShowAsync();
 
 
-                if ((int)res.Id == 0)
-                {
-                   localSettings.Values["LocationConsent"] = true;
-                }
-                else
-                {
-                    localSettings.Values["LocationConsent"] = false;
-                }
+            //Database Loading starts here
+            DatabaseHelperClass db = new DatabaseHelperClass();
+            Forecast = db.ReadForecasts();
 
-            }
-
-            Tuple<string, string> pos = await GetLocAsync();
-
-            string loc_key = await GetLocKeyAsync(pos.Item1, pos.Item2);
-
-            List<Forecasts> obj = new List<Forecasts>();
-            obj = await GetForecastAsync(loc_key);
+           
 
             loading.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
             loading1.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 
-            foreach(Forecasts f in obj)
+            foreach(Required f in Forecast)
             {
-                if(f.Temperature.Unit == "F" || f.Temperature.Unit == "f" )
-                {
-                    f.Temperature.Unit = "C";
-                    f.Temperature.Value = ((f.Temperature.Value - 32)* 5)/ 9;
-                }
                 string s = f.DateTime;
                 f.DateTime = "Time : " + s.Substring(11,8);
-                Forecast.Add(f);
             }
 
             ListV.ItemsSource = Forecast;
             ListV1.ItemsSource = Forecast;
-       
-    }
+
+            var tileXml = TileUpdateManager.GetTemplateContent(TileTemplateType.TileSquare150x150Text01);
+            var TileAttrib = tileXml.GetElementsByTagName("text");
+            TileAttrib[0].AppendChild(tileXml.CreateTextNode("Stay Tuned.."));
+            TileAttrib[1].AppendChild(tileXml.CreateTextNode(Forecast[0].DateTime));
+            TileAttrib[2].AppendChild(tileXml.CreateTextNode(Forecast[0].Temp_Value.ToString() + " °F"));
+            TileAttrib[3].AppendChild(tileXml.CreateTextNode(Forecast[0].Temp_Value.ToString() + " mi/h"));
+
+            var d = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour + 1, DateTime.Now.Minute, DateTime.Now.Second);
+
+            var tileNotification = new Windows.UI.Notifications.TileNotification(tileXml);
+            tileNotification.ExpirationTime = d;
+
+            TileUpdateManager.CreateTileUpdaterForApplication().Update(tileNotification);
+        }
 
         private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
         {
@@ -202,21 +189,102 @@ namespace AccuWeather
             }
         }
 
-        private void RefreshPage(object sender, RoutedEventArgs e)
+        private async void RefreshPage(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(MainPage));
-        }
+
+            bool isConnected = NetworkInterface.GetIsNetworkAvailable();
+            ConnectionProfile InternetConnectionProfile = NetworkInformation.GetInternetConnectionProfile();
+                NetworkConnectivityLevel connection = InternetConnectionProfile.GetNetworkConnectivityLevel();
+                if (connection == NetworkConnectivityLevel.None || connection == NetworkConnectivityLevel.LocalAccess)
+                {
+                    isConnected = false;
+                }
 
 
-        private void RefreshPages(object sender, TappedRoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(MainPage));
+            if (!isConnected)
+            {
+                await new MessageDialog("No internet connection is avaliable. Please check your connection and try again").ShowAsync();
+            }
+            else
+            {
+
+                DatabaseHelperClass db = new DatabaseHelperClass();
+
+                loading.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                loading1.Visibility = Windows.UI.Xaml.Visibility.Visible;
+
+
+                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                if (localSettings.Values.ContainsKey("LocationConsent"))
+                {
+                    // User has opted in or out of Location
+
+                }
+                else
+                {
+                    var dialog = new MessageDialog("We need your current location.");
+                    dialog.Title = "Please";
+                    dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
+                    dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
+                    var res = await dialog.ShowAsync();
+
+
+                    if ((int)res.Id == 0)
+                    {
+                        localSettings.Values["LocationConsent"] = true;
+                    }
+                    else
+                    {
+                        localSettings.Values["LocationConsent"] = false;
+                    }
+
+                }
+
+                Tuple<string, string> pos = await GetLocAsync();
+
+                string loc_key = await GetLocKeyAsync(pos.Item1, pos.Item2);
+
+                List<Forecasts> obj = new List<Forecasts>();
+                obj = await GetForecastAsync(loc_key);
+
+                foreach (Forecasts f in obj)
+                {
+                    Required r = new Required();
+                    r.DateTime = f.DateTime;
+                    r.EpochDate = f.EpochDateTime;
+                    r.Temp_Value = f.Temperature.Value;
+                    r.Wind_Value = f.Wind.Speed.Value;
+
+                    db.Insert(r);
+                }
+
+                Forecast.Clear();
+                Forecast = db.ReadForecasts();
+
+                foreach (Required f in Forecast)
+                {
+                    string s = f.DateTime;
+                    f.DateTime = "Time : " + s.Substring(11, 8);
+                }
+
+                loading.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+                loading1.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+
+                ListV.ItemsSource = Forecast;
+                ListV1.ItemsSource = Forecast;
+            }
         }
 
         private void aboutOpen(object sender, RoutedEventArgs e)
         {
             
             Frame.Navigate(typeof(BlankPage1)); 
+        }
+
+        private void PrimaryTile(object sender, RoutedEventArgs e)
+        {
+            
+
         }
     }
 }

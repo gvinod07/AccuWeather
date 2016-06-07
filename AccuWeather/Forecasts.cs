@@ -111,6 +111,8 @@ namespace AccuWeather
     public class Forecasts
     {
         public string DateTime { get; set; }
+
+        [SQLite.PrimaryKey]
         public int EpochDateTime { get; set; }
         public int WeatherIcon { get; set; }
         public string IconPhrase { get; set; }
@@ -137,5 +139,14 @@ namespace AccuWeather
         public int CloudCover { get; set; }
         public string MobileLink { get; set; }
         public string Link { get; set; }
+    }
+
+    public class Required
+    {
+        [SQLite.PrimaryKey]
+        public int EpochDate { get; set; }
+        public string DateTime { get; set; }
+        public double Temp_Value { get; set; }
+        public double Wind_Value { get; set; }
     }
 }

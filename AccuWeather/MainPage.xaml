@@ -16,9 +16,10 @@
     <Page.BottomAppBar>
         <CommandBar>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="abtButon" Label="about" Click="aboutOpen"/>
+                <AppBarButton x:Name="abtButon" Label="about.." Click="aboutOpen"/>
+                <AppBarButton x:Name="LiveBtn" Label="create live tile" Click="PrimaryTile" />
             </CommandBar.SecondaryCommands>
-            <AppBarButton Icon="Refresh" Label="refresh" Click="RefreshPage" Tapped="RefreshPages"/>
+            <AppBarButton Icon="Refresh" Label="refresh" Click="RefreshPage"/>
         </CommandBar>
     </Page.BottomAppBar>
 
@@ -48,9 +49,9 @@
                                 </TextBlock>
                                 <TextBlock Grid.Row="1" Foreground="{StaticResource foreground}" FontSize="20" FontFamily="Segoe UI Light">
                             <Run Text="Temperature : "/>
-                            <Run Text="{Binding Temperature.Value}"/>
+                            <Run Text="{Binding Temp_Value}"/>
                             <Run Text="°"/>
-                            <Run Text="{Binding Temperature.Unit}"/>
+                            <Run Text="F"/>
                                 </TextBlock>
                                 <Line X1="0" X2="1" Stretch="Fill" Margin="20,20,20,0" Stroke="White" StrokeThickness="0.5" Grid.Row="2"/>
 
@@ -92,9 +93,9 @@
                                     
                                     <TextBlock Grid.Row="1" Foreground="{StaticResource foreground}" FontFamily="Segoe UI Light" FontSize="20">
                             <Run Text="Wind Speed : "/>
-                            <Run Text="{Binding Wind.Speed.Value}"/>
+                            <Run Text="{Binding Wind_Value}"/>
                             <Run Text=""/>
-                            <Run Text="{Binding Wind.Speed.Unit}"/>
+                            <Run Text="mi/h"/>
                                     </TextBlock>
 
                                     <Line X1="0" X2="1" Stretch="Fill" Margin="20,20,20,0" Stroke="White" StrokeThickness="0.5" Grid.Row="2"/>
